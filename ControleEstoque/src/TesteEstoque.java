@@ -37,13 +37,20 @@ public class TesteEstoque {
       return 0;  
     }
     
-    static int lerTxt(){
+    static int lerTxt(List<Produto> produtos){
       try {
         File myObj = new File("estoque.txt");
         Scanner myReader = new Scanner(myObj);
         while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
-        System.out.println(data);
+        
+        if(!data.equalsIgnoreCase("")){
+            System.out.println(data);
+            String dataArray[]= new String[3];
+            dataArray = data.split("!");
+            Produto x = new Produto(Integer.parseInt(dataArray[0]),dataArray[1],Integer.parseInt(dataArray[2]));
+            produtos.add(produtos.size(),x);
+        }
       }
         myReader.close();
       } catch (FileNotFoundException e) {
@@ -55,11 +62,11 @@ public class TesteEstoque {
     
     static int escreverTxt(String a){
         try {
-            String data=""; 
+            String data = "";
             File myObj = new File("estoque.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
-            data = data + myReader.nextLine();
+            data = data+ "\n" + myReader.nextLine();
             }
             FileWriter fileWriter = new FileWriter("estoque.txt");
 	    BufferedWriter writer = new BufferedWriter(fileWriter);
@@ -86,7 +93,7 @@ public class TesteEstoque {
         
         produtos = new ArrayList<>();
         
-        lerTxt();
+        lerTxt(produtos);
         System.out.println("----------//----------");
         
         do {
