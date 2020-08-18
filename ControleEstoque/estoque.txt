@@ -1,6 +1,3 @@
-
-
-
 0!Bone!100
 1!Calca!2
 2!Blusa!200
