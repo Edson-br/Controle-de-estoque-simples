@@ -3,7 +3,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.FileReader;
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.IOException; 
 import java.io.FileNotFoundException;
 
@@ -63,8 +65,8 @@ public class TesteEstoque {
     static int escreverTxt(String a){
         try {
             String data = "";
-            File myObj = new File("estoque.txt");
-            Scanner myReader = new Scanner(myObj);
+            File inputFile = new File("estoque.txt");
+            Scanner myReader = new Scanner(inputFile);
             while (myReader.hasNextLine()) {
             data = data+ "\n" + myReader.nextLine();
             }
@@ -78,6 +80,31 @@ public class TesteEstoque {
             System.out.println("Ocorreu um erro.\n");
         }
     
+        return 0;
+    }
+    
+    static int removerTxt(String a){
+         try {
+            String data = "";
+            File inputFile = new File("estoque.txt");
+            Scanner myReader = new Scanner(inputFile);
+            while (myReader.hasNextLine()){
+                if(myReader.nextLine().equalsIgnoreCase(a)){
+                    while (myReader.hasNextLine()){
+                    data = data+ "\n" + myReader.nextLine();
+                    }
+                }
+            }
+            FileWriter fileWriter = new FileWriter("estoque.txt");
+	    BufferedWriter writer = new BufferedWriter(fileWriter);
+	    writer.append(data+"\n");
+            writer.close();
+        } catch (IOException e) {
+            System.out.println("Ocorreu um erro.\n");
+        } catch (java.util.NoSuchElementException e){
+            System.out.println("Ocorreu um erro.\n");
+        }
+         
         return 0;
     }
 	 
@@ -141,22 +168,26 @@ public class TesteEstoque {
 		case 1:
                     System.out.println("Qual o codigo do produto a ser excluido?");
                     int j = entrada.nextInt();
+                    removerTxt(produtos.get(j).toString());
                     produtos.remove(j);
+                    System.out.println("Excluido com sucesso!!!");
                     
                     break;
 		case 2:
-                    int i;
+                    int i,w=0;
                     System.out.println("Qual o nome do produto a ser excluido?");
                     String k = entrada.next();
-                    for(i=0;i<=produtos.size();i++){
+                    for(i=0;i<produtos.size();i++){
                         if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){
+                            removerTxt(produtos.get(i).toString());
                             produtos.remove(i);
                             System.out.println("Excluido com sucesso!!!");
-                        }else{
-                            System.out.println("produto nao encontrado!!!");
-                        };
+                            w=1;
+                        }
                     }
-                    
+                    if(w !=1){
+                            System.out.println("Produto nao encontrado!!!");
+                    };
                     break;
                 default:
                     break;}
