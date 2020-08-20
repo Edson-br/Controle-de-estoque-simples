@@ -41,20 +41,24 @@ public class TesteEstoque {
     
     static int lerTxt(List<Produto> produtos){
       try {
+        int i=0;
         File myObj = new File("estoque.txt");
+        
         Scanner myReader = new Scanner(myObj);
         while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
         
         if(!data.equalsIgnoreCase("")){
-            System.out.println(data);
             String dataArray[]= new String[3];
             dataArray = data.split("!");
-            Produto x = new Produto(Integer.parseInt(dataArray[0]),dataArray[1],Integer.parseInt(dataArray[2]));
+            Produto x = new Produto(i,dataArray[1],Integer.parseInt(dataArray[2]));
+            i+=1;
             produtos.add(produtos.size(),x);
+            System.out.println(x.toString());
         }
       }
         myReader.close();
+        
       } catch (FileNotFoundException e) {
         System.out.println("An error occurred.");
         e.printStackTrace();
@@ -62,24 +66,26 @@ public class TesteEstoque {
        return 0;
     }
     
-    static int escreverTxt(String a){
+    static int escreverTxt(List<Produto> produtos){
         try {
             String data = "";
             File inputFile = new File("estoque.txt");
-            Scanner myReader = new Scanner(inputFile);
-            while (myReader.hasNextLine()) {
-            data = data+ "\n" + myReader.nextLine();
+            
+            for (int i=0;produtos.size()>i;i++){
+                data+=  "\n" + produtos.get(i).toString();
+                System.out.println(data);
             }
             FileWriter fileWriter = new FileWriter("estoque.txt");
 	    BufferedWriter writer = new BufferedWriter(fileWriter);
 	    writer.append(data+"\n");
-	    writer.append(a);
+            System.out.println(data);
             writer.close();
-            System.out.println("Adicionado com sucesso.");
         } catch (IOException e) {
             System.out.println("Ocorreu um erro.\n");
+        } catch (java.util.NoSuchElementException e){
+            System.out.println("Ocorreu um erro.\n");
         }
-    
+         
         return 0;
     }
     
@@ -107,6 +113,7 @@ public class TesteEstoque {
          
         return 0;
     }
+    
 	 
     
     public static void main(String[] args) {
@@ -151,7 +158,7 @@ public class TesteEstoque {
 	quantidade = entrada.nextInt();
         Produto x = new Produto(produtos.size(),nome,quantidade);
         produtos.add(produtos.size(),x);
-        escreverTxt(x.toString());
+        escreverTxt(produtos);
         return "";
     }
     
@@ -170,6 +177,8 @@ public class TesteEstoque {
                     int j = entrada.nextInt();
                     removerTxt(produtos.get(j).toString());
                     produtos.remove(j);
+                    System.out.println("----------//----------");
+                    lerTxt(produtos);
                     System.out.println("Excluido com sucesso!!!");
                     
                     break;
@@ -181,6 +190,8 @@ public class TesteEstoque {
                         if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){
                             removerTxt(produtos.get(i).toString());
                             produtos.remove(i);
+                            System.out.println("----------//----------");
+                            lerTxt(produtos);
                             System.out.println("Excluido com sucesso!!!");
                             w=1;
                         }
