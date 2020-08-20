@@ -9,12 +9,13 @@ import java.io.BufferedReader;
 import java.io.IOException; 
 import java.io.FileNotFoundException;
 
+
 public class TesteEstoque {
 
     static Scanner entrada = new Scanner(System.in);
     static String tipoCliente;
 	
-    static int menuPrincipal(){
+    static int menuPrincipal(){ //Funcao utilidada para gerar o menu principal
         int ent;
 	System.out.println("Cadastro de Produto");
 	System.out.println("1 - Cadastro de novos produtos");
@@ -25,7 +26,7 @@ public class TesteEstoque {
 	return ent;
     }
     
-    static int criarTxt(){
+    static int criarTxt(){  //Funcao utilidada para gerar o arquivo estoque.txt
         try {
             File myObj = new File("estoque.txt");
             if (myObj.createNewFile()) {
@@ -39,14 +40,16 @@ public class TesteEstoque {
       return 0;  
     }
     
-    static int lerTxt(List<Produto> produtos){
+    static int lerTxt(List<Produto> produtos){  //Funcao utilidada para ler o aquivo e transformar seu conteudo num List<Produto>
       try {
         int i=0;
+        produtos.clear();
         File myObj = new File("estoque.txt");
         
         Scanner myReader = new Scanner(myObj);
         while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
+        
         
         if(!data.equalsIgnoreCase("")){
             String dataArray[]= new String[3];
@@ -54,9 +57,10 @@ public class TesteEstoque {
             Produto x = new Produto(i,dataArray[1],Integer.parseInt(dataArray[2]));
             i+=1;
             produtos.add(produtos.size(),x);
-            System.out.println(x.toString());
+            System.out.println(x.toString());  
+            }
         }
-      }
+        atualizarTxt(produtos);
         myReader.close();
         
       } catch (FileNotFoundException e) {
@@ -66,19 +70,17 @@ public class TesteEstoque {
        return 0;
     }
     
-    static int escreverTxt(List<Produto> produtos){
+    static int atualizarTxt(List<Produto> produtos){ //Funcao utilidada para rescrever o aquivo baseando no conteudo do um List<Produto>
         try {
             String data = "";
             File inputFile = new File("estoque.txt");
             
             for (int i=0;produtos.size()>i;i++){
                 data+=  "\n" + produtos.get(i).toString();
-                System.out.println(data);
             }
             FileWriter fileWriter = new FileWriter("estoque.txt");
 	    BufferedWriter writer = new BufferedWriter(fileWriter);
-	    writer.append(data+"\n");
-            System.out.println(data);
+	    writer.append(data);
             writer.close();
         } catch (IOException e) {
             System.out.println("Ocorreu um erro.\n");
@@ -88,33 +90,39 @@ public class TesteEstoque {
          
         return 0;
     }
+
+    static int removerTxt(String a){ //Funcao utilidada para remover uma lina do arquivo baseado numa String(no caso um toString de um dos valores da List<Produto>)
+    try{
+        File inputFile = new File("estoque.txt");
     
-    static int removerTxt(String a){
-         try {
-            String data = "";
-            File inputFile = new File("estoque.txt");
-            Scanner myReader = new Scanner(inputFile);
-            while (myReader.hasNextLine()){
-                if(myReader.nextLine().equalsIgnoreCase(a)){
-                    while (myReader.hasNextLine()){
-                    data = data+ "\n" + myReader.nextLine();
-                    }
-                }
-            }
-            FileWriter fileWriter = new FileWriter("estoque.txt");
-	    BufferedWriter writer = new BufferedWriter(fileWriter);
-	    writer.append(data+"\n");
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Ocorreu um erro.\n");
-        } catch (java.util.NoSuchElementException e){
-            System.out.println("Ocorreu um erro.\n");
-        }
-         
-        return 0;
+        File tempFile = new File("estoqueTemp.txt");
+
+        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
+
+        String currentLine;
+
+        while((currentLine = reader.readLine()) != null) {
+            String trimmedLine = currentLine.trim();
+            if(trimmedLine.equals(a)) continue;
+            writer.write(currentLine + System.getProperty("line.separator"));
+        }   
+    
+        writer.close(); 
+        reader.close(); 
+    
+        inputFile.delete();
+        tempFile.renameTo(inputFile);
+    
+    
+    }catch(java.io.FileNotFoundException e){
+        System.out.println("file not found");
+    }catch (IOException ex) {
+        System.out.println("//");   
     }
-    
-	 
+
+    return 0;
+}
     
     public static void main(String[] args) {
         List<Produto> produtos;
@@ -158,7 +166,9 @@ public class TesteEstoque {
 	quantidade = entrada.nextInt();
         Produto x = new Produto(produtos.size(),nome,quantidade);
         produtos.add(produtos.size(),x);
-        escreverTxt(produtos);
+        System.out.println("----------//----------");
+        atualizarTxt(produtos);
+        lerTxt(produtos);
         return "";
     }
     
@@ -191,11 +201,11 @@ public class TesteEstoque {
                             removerTxt(produtos.get(i).toString());
                             produtos.remove(i);
                             System.out.println("----------//----------");
-                            lerTxt(produtos);
                             System.out.println("Excluido com sucesso!!!");
                             w=1;
                         }
                     }
+                    lerTxt(produtos);
                     if(w !=1){
                             System.out.println("Produto nao encontrado!!!");
                     };
@@ -217,12 +227,13 @@ public class TesteEstoque {
 	
 	 switch (ent) {
 		case 1:
-                    System.out.println("Qual o codigo do produto a ser excluido?");
+                    System.out.println("Qual o codigo do produto a ser Editado?");
                     int j = entrada.nextInt();
                    
-                    System.out.println("Qual a nova quantidade do produto");
+                    System.out.println("Qual a nova quantidade do produto?");
                     quant = entrada.nextInt();
                     produtos.get(j).setQntProduto(quant);
+                    
 		case 2:
                     int i;
                     System.out.println("Qual o nome do produto a ser excluido?");
