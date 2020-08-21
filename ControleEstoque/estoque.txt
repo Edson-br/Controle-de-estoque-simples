@@ -1,1 +1,5 @@
 
+0!Zarabatana!12
+1!Abada!12
+2!Capacete!12
+3!Gravata!12
