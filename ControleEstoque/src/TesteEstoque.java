@@ -47,27 +47,51 @@ public class TesteEstoque {
         File myObj = new File("estoque.txt");
         
         Scanner myReader = new Scanner(myObj);
+        
+        System.out.println("Codigo   Nome                     Quantidade");
         while (myReader.hasNextLine()) {
         String data = myReader.nextLine();
-        
-        
-        if(!data.equalsIgnoreCase("")){
-            String dataArray[]= new String[3];
-            dataArray = data.split("!");
-            Produto x = new Produto(i,dataArray[1],Integer.parseInt(dataArray[2]));
-            i+=1;
-            produtos.add(produtos.size(),x);
-            System.out.println(x.toString());  
-            }
+            if(!data.equalsIgnoreCase("")){
+                String dataArray[]= new String[3];
+                dataArray = data.split("!");
+                Produto x = new Produto(i,dataArray[1],Integer.parseInt(dataArray[2]));
+                i+=1;
+                produtos.add(produtos.size(),x);
+            
+                printTabela(x);
+            } 
         }
         atualizarTxt(produtos);
         myReader.close();
-        
+         
       } catch (FileNotFoundException e) {
-        System.out.println("An error occurred.");
+        System.out.println("Ocorreu um erro.\n");
         e.printStackTrace();
         }  
        return 0;
+    }
+    
+    static int printTabela(Produto x){  ////Funcao utilidada para printar um objeto Produto nos padroes da tabela
+            int tamanhoProduto=0;
+            String s=String.valueOf(x.getIdProduto());
+            
+            System.out.print(x.getIdProduto());
+            for(int j=0;s.length()>j;j++){
+                tamanhoProduto+=1;}
+            for(int j=0;9-tamanhoProduto>j;j++){
+                System.out.print(" ");
+            }
+            
+            System.out.print(x.getNomeProduto());
+            for(int j=0;x.getNomeProduto().length()>j;j++){
+                tamanhoProduto+=1;}
+            for(int j=0;26-tamanhoProduto>j;j++){
+                System.out.print(" ");
+            }
+            
+            System.out.print(x.getQntProduto()+"\n");  
+            
+    return 0;
     }
     
     static int atualizarTxt(List<Produto> produtos){ //Funcao utilidada para rescrever o aquivo baseando no conteudo do um List<Produto>
@@ -82,47 +106,13 @@ public class TesteEstoque {
 	    BufferedWriter writer = new BufferedWriter(fileWriter);
 	    writer.append(data);
             writer.close();
-        } catch (IOException e) {
-            System.out.println("Ocorreu um erro.\n");
-        } catch (java.util.NoSuchElementException e){
+        } catch (IOException | java.util.NoSuchElementException e) {
             System.out.println("Ocorreu um erro.\n");
         }
          
         return 0;
     }
 
-    static int removerTxt(String a){ //Funcao utilidada para remover uma lina do arquivo baseado numa String(no caso um toString de um dos valores da List<Produto>)
-    try{
-        File inputFile = new File("estoque.txt");
-    
-        File tempFile = new File("estoqueTemp.txt");
-
-        BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-        BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile));
-
-        String currentLine;
-
-        while((currentLine = reader.readLine()) != null) {
-            String trimmedLine = currentLine.trim();
-            if(trimmedLine.equals(a)) continue;
-            writer.write(currentLine + System.getProperty("line.separator"));
-        }   
-    
-        writer.close(); 
-        reader.close(); 
-    
-        inputFile.delete();
-        tempFile.renameTo(inputFile);
-    
-    
-    }catch(java.io.FileNotFoundException e){
-        System.out.println("file not found");
-    }catch (IOException ex) {
-        System.out.println("//");   
-    }
-
-    return 0;
-}
     
     public static void main(String[] args) {
         List<Produto> produtos;
@@ -136,7 +126,8 @@ public class TesteEstoque {
         produtos = new ArrayList<>();
         
         lerTxt(produtos);
-        System.out.println("----------//----------");
+        
+        System.out.println("--------------------//--------------------");
         
         do {
             ent = menuPrincipal();
@@ -157,7 +148,7 @@ public class TesteEstoque {
 	}while (ent==4);
     }
     
-    static String adicionar(List<Produto> produtos){
+    static String adicionar(List<Produto> produtos){  //Funcao utilidada para receber as informacoes do novo produto, adiciona-los a lista produtos e chamar as funcoes atualizarTxt() e lerTxt()
         String nome;
 	int quantidade;
         System.out.println("Informe o nome do produto");
@@ -166,13 +157,13 @@ public class TesteEstoque {
 	quantidade = entrada.nextInt();
         Produto x = new Produto(produtos.size(),nome,quantidade);
         produtos.add(produtos.size(),x);
-        System.out.println("----------//----------");
+        System.out.println("--------------------//--------------------");
         atualizarTxt(produtos);
         lerTxt(produtos);
         return "";
     }
     
-    static String remover(List<Produto> produtos){
+    static String remover(List<Produto> produtos){ //Funcao utilidada para receber as informacoes do produto a ser excluido, remove-lo da lista produtos e chamar as funcoes atualizarTxt() e lerTxt()
 	int id;
         int ent;
         
@@ -182,40 +173,47 @@ public class TesteEstoque {
 	ent = entrada.nextInt();
 	
 	 switch (ent) {
-		case 1:
-                    System.out.println("Qual o codigo do produto a ser excluido?");
-                    int j = entrada.nextInt();
-                    removerTxt(produtos.get(j).toString());
-                    produtos.remove(j);
-                    System.out.println("----------//----------");
-                    lerTxt(produtos);
-                    System.out.println("Excluido com sucesso!!!");
+		
+                case 1:  //O usuario selecionou inserir o numero do produto a ser excluido
+                    try{
+                        System.out.println("Qual o codigo do produto a ser excluido?");
+                        int j = entrada.nextInt();
+                        produtos.remove(j);
+                        atualizarTxt(produtos);
+                        System.out.println("--------------------//--------------------");
+                        lerTxt(produtos);
+                        System.out.println("Excluido com sucesso!!!");
                     
-                    break;
-		case 2:
+                        break;
+                    }catch(IndexOutOfBoundsException e){
+                    System.out.println("Codigo do pruduto nao encontrado!!!");
+                    }
+		case 2:  //O usuario selecionou inserir o nome do produto a ser excluido
                     int i,w=0;
                     System.out.println("Qual o nome do produto a ser excluido?");
                     String k = entrada.next();
                     for(i=0;i<produtos.size();i++){
-                        if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){
-                            removerTxt(produtos.get(i).toString());
+                        if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){  //Percorre a lista produtos em busca do nome digitado
                             produtos.remove(i);
-                            System.out.println("----------//----------");
+                            atualizarTxt(produtos);
+                            System.out.println("--------------------//--------------------");
                             System.out.println("Excluido com sucesso!!!");
                             w=1;
                         }
                     }
-                    lerTxt(produtos);
-                    if(w !=1){
+                    if(w ==0){
                             System.out.println("Produto nao encontrado!!!");
-                    };
+                    }
+                    lerTxt(produtos);
+                    
                     break;
                 default:
                     break;}
+        
         return "";
     }
     
-    static String editar(List<Produto> produtos){
+    static String editar(List<Produto> produtos){ //Funcao utilidada para receber as informacoes do produto a ser editado, atualiza-lo na lista produtos e chamar as funcoes atualizarTxt() e lerTxt()
         int id;
         int ent;
         int quant;
@@ -226,30 +224,46 @@ public class TesteEstoque {
 	ent = entrada.nextInt();
 	
 	 switch (ent) {
-		case 1:
-                    System.out.println("Qual o codigo do produto a ser Editado?");
-                    int j = entrada.nextInt();
+		case 1: //O usuario selecionou inserir o numero do produto a ser editado
+                    try{
+                        System.out.println("Qual o codigo do produto a ser Editado?");
+                        int j = entrada.nextInt();
                    
-                    System.out.println("Qual a nova quantidade do produto?");
-                    quant = entrada.nextInt();
-                    produtos.get(j).setQntProduto(quant);
+                        System.out.println("Qual a nova quantidade do produto?");
+                        quant = entrada.nextInt();
+                        produtos.get(j).setQntProduto(quant);
+                        System.out.println("--------------------//--------------------");
+                        atualizarTxt(produtos);
+                        lerTxt(produtos);
+                        System.out.println("Editado com sucesso!!!");
                     
-		case 2:
-                    int i;
+                        break;
+                    }catch(IndexOutOfBoundsException e){
+                        System.out.println("Codigo do pruduto nao encontrado!!!");
+                    }
+		case 2:  //O usuario selecionou inserir o nome do produto a ser editado
+                    int i,w=0;
                     System.out.println("Qual o nome do produto a ser excluido?");
                     String k = entrada.next();
-                    for(i=0;i<=produtos.size();i++){
-                        if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){
+                    for(i=0;i<produtos.size();i++){  
+                        if(k.equalsIgnoreCase(produtos.get(i).getNomeProduto())){  //Percorre a lista produtos em busca do nome digitado
                             System.out.println("Qual a nova quantidade do produto");
                             quant = entrada.nextInt();
                             produtos.get(i).setQntProduto(quant);
+                            System.out.println("--------------------//--------------------");
+                            atualizarTxt(produtos);
+                            lerTxt(produtos);
                             System.out.println("Editado com sucesso!!!");
-                        }else{
-                            System.out.println("produto nao encontrado!!!");
-                        };
+                            w+=1;
+                        }
                     }
+                    if(w ==0){
+                            System.out.println("Produto nao encontrado!!!");
+                    }
+                    break;
                 default:
                     break;}
+        
         return "";
     }
 }
